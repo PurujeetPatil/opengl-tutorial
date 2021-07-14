@@ -26,7 +26,11 @@ static unsigned int compileShader(unsigned int type, const std::string& src)
         int length;
         // i specifies that we are giving an integer and v specifies it wants a vector
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
+
+        // Create a message buffer of that length
         char* message = (char*) _malloca(length * sizeof(char));
+
+        // Pass the message buffer
         glGetShaderInfoLog(id, length, &length, message);
 
         std::cout << "Failed to compile shader! : " << (type == GL_VERTEX_SHADER ? "|Vertex|" : "|Fragment|");
@@ -114,6 +118,8 @@ int main(void)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
+    /*-----------------------------------------------GLSL source Code-------------------------------------------------*/
+    // GLSL -> (open)GL Shader Language 
     std::string vertex_shader =
         "#version 330 core\n" // specify version of GLSL (core as in we wont use any deprecated functions)
         "\n"
@@ -131,6 +137,8 @@ int main(void)
         "void main() {\n"
         "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
         "}\n";
+
+    /*----------------------------------------------------------------------------------------------------------------*/
 
     unsigned int shader = getShader(vertex_shader, fragment_shader);
     glUseProgram(shader);
