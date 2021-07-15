@@ -3,6 +3,7 @@
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include "fileutil.h"
 
 static unsigned int compileShader(unsigned int type, const std::string& src)
 {
@@ -28,7 +29,7 @@ static unsigned int compileShader(unsigned int type, const std::string& src)
         glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
 
         // Create a message buffer of that length
-        char* message = (char*) _malloca(length * sizeof(char));
+        char* message = (char*)_malloca(length * sizeof(char));
 
         // Pass the message buffer
         glGetShaderInfoLog(id, length, &length, message);
@@ -44,14 +45,14 @@ static unsigned int compileShader(unsigned int type, const std::string& src)
 
 static unsigned int getShader(const std::string& vertexShader, const std::string& fragmentShader)
 {
-     // Create a program to run on GPU
+    // Create a program to run on GPU
     unsigned int program = glCreateProgram();
 
     //------------------------Vertex Shader-------------------------
 
     // Create a shader ID
     unsigned int v_id = compileShader(GL_VERTEX_SHADER, vertexShader);
-    
+
     //-----------------------Fragment Shader------------------------
 
     // Same shit below, expect for target that is GL_FRAGMENT_SHADER
@@ -118,36 +119,9 @@ int main(void)
     glEnableVertexAttribArray(0);
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
-    /*-----------------------------------------------GLSL source Code-------------------------------------------------*/
-    // GLSL -> (open)GL Shader Language 
-    std::string vertex_shader = // specify version of GLSL (core as in we wont use any deprecated functions)
-        R"(
-            #version 330 core
-            
-            layout(location = 0) in vec4 position;
+    ShaderSource source = getShaderSource("res/shader/basic.shader");
 
-            void main()
-            {
-                gl_Position = position;
-            }
-        )";
-
-
-    std::string fragment_shader = 
-        R"(
-            #version 330 core
-        
-            layout(location = 0) out vec4 color;
-
-            void main()
-            {
-                color = vec4(1.0, 0.0, 0.0, 1.0);
-            }
-        )";
-
-    /*----------------------------------------------------------------------------------------------------------------*/
-
-    unsigned int shader = getShader(vertex_shader, fragment_shader);
+    unsigned int shader = getShader(source.vertexSrc, source.fragmentSrc);
     glUseProgram(shader);
 
     /* Loop until the user closes the window */
