@@ -145,10 +145,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\errorHandler.cpp" />
     <ClCompile Include="src\fileutil.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\errorHandler.h" />
     <ClInclude Include="src\fileutil.h" />
   </ItemGroup>
   <ItemGroup>

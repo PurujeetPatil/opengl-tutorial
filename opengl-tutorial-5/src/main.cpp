@@ -5,6 +5,8 @@
 #include <math.h>
 #include "fileutil.h"
 
+#include "errorHandler.h"
+
 static unsigned int compileShader(unsigned int type, const std::string& src)
 {
     // Create a shader ID
@@ -148,7 +150,11 @@ int main(void)
                 type: data type of indices, it has to be GL_UNSIGNED_INT
                 indexBuffer: nullptr as we have already bind'ed the buffer to GL_ELEMENT_ARRAY_BUFFER targe
         */
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+
+        // An openGL error that got handled
+        //GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
+
+        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
