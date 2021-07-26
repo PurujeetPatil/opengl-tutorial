@@ -86,6 +86,10 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
 
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
@@ -119,13 +123,17 @@ int main(void)
         2, 3, 0
     };
 
+    unsigned int vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     // Vertex buffer
     unsigned int buffer;
     glGenBuffers(1, &buffer);
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, 4 * 2 * sizeof(float), positions, GL_STATIC_DRAW);
 
-    glEnableVertexAttribArray(0);
+    GLCall(glEnableVertexAttribArray(0));
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 
     // index buffer
@@ -145,6 +153,13 @@ int main(void)
     // some fancy animated color shifts
     float red = 0.0f, inc = 0.01f;
 
+    /* Unbinding everything */
+    glBindVertexArray(0);
+    glUseProgram(0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
@@ -163,7 +178,10 @@ int main(void)
         // An openGL error that got handled
         //GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
 
+        /* Binding Shader program and just VAO as vao stores vb and ibo */
+        glUseProgram(shader);
         glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);
+        glBindVertexArray(vao);
 
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
