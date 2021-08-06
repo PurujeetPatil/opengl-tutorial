@@ -23,13 +23,17 @@
     <ClCompile Include="src\fileutil.cpp" />
     <ClCompile Include="src\indexbuffer.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\vertexbuffer.cpp" />
+    <ClCompile Include="src\vertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\errorHandler.h" />
     <ClInclude Include="src\fileutil.h" />
     <ClInclude Include="src\indexbuffer.h" />
+    <ClInclude Include="src\vertexArray.h" />
     <ClInclude Include="src\vertexbuffer.h" />
+    <ClInclude Include="src\vertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="res\shader\basic.shader" />

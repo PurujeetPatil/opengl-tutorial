@@ -8,6 +8,7 @@
 #include "errorHandler.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
+#include "vertexArray.h"
 
 static unsigned int compileShader(unsigned int type, const std::string& src)
 {
@@ -125,15 +126,21 @@ int main(void)
         2, 3, 0
     };
 
-    unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    /* Vertex array object */
+    VertexArray va;
 
-    // Vertex buffer
+    /* Vertex buffer */
     VertexBuffer vb(positions, 4 * 2 * sizeof(float));
 
-    GLCall(glEnableVertexAttribArray(0));
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
+    /* Layout for glVertexAttribPointer */
+    VertexBufferLayout layout;
+
+    /* Pushing 2 float as each vertex is represented by 2 floats x, y */
+    layout.push<float>(2);
+
+    /* Adding the vertex buffer and layout to vertex array */
+    va.addBuffer(vb, layout);
+
 
     // index buffer
     IndexBuffer ib(indices, 6);
@@ -177,7 +184,8 @@ int main(void)
         /* Binding Shader program and just VAO as vao stores vb and ibo */
         glUseProgram(shader);
         glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);
-        glBindVertexArray(vao);
+        va.Bind();
+
 
         GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
 
