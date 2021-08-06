@@ -25,7 +25,6 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\vertexArray.cpp" />
     <ClCompile Include="src\vertexbuffer.cpp" />
-    <ClCompile Include="src\vertexBufferLayout.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\errorHandler.h" />
