@@ -9,6 +9,7 @@
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
 #include "vertexArray.h"
+#include "shader.h"
 
 static unsigned int compileShader(unsigned int type, const std::string& src)
 {
@@ -145,12 +146,14 @@ int main(void)
     // index buffer
     IndexBuffer ib(indices, 6);
 
-    ShaderSource source = getShaderSource("res/shader/basic.shader");
+	/*ShaderSource source = getShaderSource("res/shader/basic.shader");
 
-    unsigned int shader = getShader(source.vertexSrc, source.fragmentSrc);
-    glUseProgram(shader);
+	unsigned int shader = getShader(source.vertexSrc, source.fragmentSrc);
+	glUseProgram(shader);
 
-    unsigned int uniform_location = glGetUniformLocation(shader, "u_color");
+	unsigned int uniform_location = glGetUniformLocation(shader, "u_color");*/
+
+    Shader shader("res/shader/basic.shader");
     
 
     // some fancy animated color shifts
@@ -182,8 +185,10 @@ int main(void)
         //GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
 
         /* Binding Shader program and just VAO as vao stores vb and ibo */
-        glUseProgram(shader);
-        glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);
+	   /* glUseProgram(shader);
+		glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);*/
+        shader.bind();
+        shader.setUniform4f("u_color", red, 0.5f, 0.5f, 0.5f);
         va.Bind();
 
 
@@ -202,7 +207,7 @@ int main(void)
         /* Poll for and process events */
         glfwPollEvents();
     }
-    glDeleteProgram(shader);
+    /*glDeleteProgram(shader);*/
     glfwTerminate();
     return 0;
 }
