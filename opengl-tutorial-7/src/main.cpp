@@ -3,84 +3,15 @@
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
-#include "fileutil.h"
 
+#include "fileutil.h"
 #include "errorHandler.h"
 #include "vertexbuffer.h"
 #include "indexbuffer.h"
 #include "vertexArray.h"
 #include "shader.h"
+#include "renderer.h"
 
-static unsigned int compileShader(unsigned int type, const std::string& src)
-{
-    // Create a shader ID
-    unsigned int id = glCreateShader(type);
-
-    // openGL likes NULL terminated string and its pointer for some reason
-    const char* s_src = src.c_str();
-
-    // Pass the id for shader, number of shaders, reference to pointer to src of shader (wtf?) and length of shader(we are passing null, as null terminated) 
-    glShaderSource(id, 1, &s_src, nullptr);
-
-    // Compile the shader by the id
-    glCompileShader(id);
-
-    //-------------------Error Handling---------------------
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE)
-    {
-        int length;
-        // i specifies that we are giving an integer and v specifies it wants a vector
-        glGetShaderiv(id, GL_INFO_LOG_LENGTH, &length);
-
-        // Create a message buffer of that length
-        char* message = (char*)_malloca(length * sizeof(char));
-
-        // Pass the message buffer
-        glGetShaderInfoLog(id, length, &length, message);
-
-        std::cout << "Failed to compile shader! : " << (type == GL_VERTEX_SHADER ? "|Vertex|" : "|Fragment|");
-        std::cout << message << std::endl;
-        glDeleteShader(id);
-        return 0;
-    }
-
-    return id;
-}
-
-static unsigned int getShader(const std::string& vertexShader, const std::string& fragmentShader)
-{
-    // Create a program to run on GPU
-    unsigned int program = glCreateProgram();
-
-    //------------------------Vertex Shader-------------------------
-
-    // Create a shader ID
-    unsigned int v_id = compileShader(GL_VERTEX_SHADER, vertexShader);
-
-    //-----------------------Fragment Shader------------------------
-
-    // Same shit below, expect for target that is GL_FRAGMENT_SHADER
-    unsigned int f_id = compileShader(GL_FRAGMENT_SHADER, fragmentShader);
-
-
-    // attach the shader to the program by id
-    glAttachShader(program, v_id);
-    glAttachShader(program, f_id);
-
-    // link the two shader .obj(s) in the program
-    glLinkProgram(program);
-
-    // validate if successfully linked
-    glValidateProgram(program);
-
-    // delete the intermediates like .obj(s)
-    glDeleteShader(v_id);
-    glDeleteShader(f_id);
-
-    return program;
-}
 
 int main(void)
 {
@@ -155,6 +86,7 @@ int main(void)
 
     Shader shader("res/shader/basic.shader");
     
+    Renderer renderer;
 
     // some fancy animated color shifts
     float red = 0.0f, inc = 0.01f;
@@ -170,7 +102,7 @@ int main(void)
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.clear();
 
         /*
             Instead of glDrawArrays we use glDrawELements
@@ -189,10 +121,8 @@ int main(void)
 		glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);*/
         shader.bind();
         shader.setUniform4f("u_color", red, 0.5f, 0.5f, 0.5f);
-        va.Bind();
-
-
-        GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));
+        
+        renderer.draw(va, ib, shader);
 
         if (red > 1.0f)
             inc = -0.01f;

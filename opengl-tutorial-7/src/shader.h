@@ -13,8 +13,8 @@ public:
 	Shader(std::string filepath);
 	~Shader();
 
-	void bind();
-	void unbind();
+	void bind() const;
+	void unbind() const;
 	void setUniform4f(const std::string &location, float f1, float f2, float f3, float f4);
 private:
 	unsigned int getShaderProgram(const std::string& vertexShader, const std::string& fragmentShader);

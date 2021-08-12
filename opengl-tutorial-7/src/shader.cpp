@@ -14,12 +14,12 @@ Shader::~Shader()
 	GLCall(glDeleteProgram(m_renderID));
 }
 
-void Shader::bind()
+void Shader::bind() const 
 {
 	GLCall(glUseProgram(m_renderID));
 }
 
-void Shader::unbind()
+void Shader::unbind() const 
 {
 	GLCall(glUseProgram(0));
 }
