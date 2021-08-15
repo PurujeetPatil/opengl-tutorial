@@ -11,8 +11,7 @@
 #include "vertexArray.h"
 #include "shader.h"
 #include "renderer.h"
-
-
+#include "textures.h"
 
 int main(void)
 {
@@ -48,10 +47,10 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     float positions[] = {
-        -0.5f, -0.5f, // 0
-         0.5f, -0.5f, // 1
-         0.5f,  0.5f, // 2
-        -0.5f,  0.5f  // 3
+        -0.5f, -0.5f, 0.0f, 0.0f, // 0
+         0.5f, -0.5f, 1.0f, 0.0f, // 1
+         0.5f,  0.5f, 1.0f, 1.0f, // 2
+        -0.5f,  0.5f, 0.0f, 1.0f  // 3
     };
 
     unsigned int indices[] = {
@@ -59,16 +58,21 @@ int main(void)
         2, 3, 0
     };
 
+    /* Enabling blending for png files */
+    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    GLCall(glEnable(GL_BLEND));
+
     /* Vertex array object */
     VertexArray va;
 
     /* Vertex buffer */
-    VertexBuffer vb(positions, 4 * 2 * sizeof(float));
+    VertexBuffer vb(positions, 4 * 4 * sizeof(float));
 
     /* Layout for glVertexAttribPointer */
     VertexBufferLayout layout;
 
     /* Pushing 2 float as each vertex is represented by 2 floats x, y */
+    layout.push<float>(2);
     layout.push<float>(2);
 
     /* Adding the vertex buffer and layout to vertex array */
@@ -87,6 +91,10 @@ int main(void)
 
     Shader shader("res/shader/basic.shader");
 
+	Texture texture("res\\textures\\meme.png");
+	texture.bind();
+    shader.setUniform1i("u_texture", 0);
+    
     Renderer renderer;
 
     // some fancy animated color shifts
