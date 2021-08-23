@@ -3,6 +3,8 @@
 #include <iostream>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "fileutil.h"
 #include "errorHandler.h"
@@ -89,11 +91,15 @@ int main(void)
 
 	unsigned int uniform_location = glGetUniformLocation(shader, "u_color");*/
 
+
+    glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
     Shader shader("res/shader/basic.shader");
 
 	Texture texture("res\\textures\\meme.png");
 	texture.bind();
     shader.setUniform1i("u_texture", 0);
+    shader.setUniformMat4f("u_MVP", projection);
     
     Renderer renderer;
 
@@ -129,7 +135,7 @@ int main(void)
 	   /* glUseProgram(shader);
 		glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);*/
         shader.bind();
-        shader.setUniform4f("u_color", red, 0.5f, 0.5f, 0.5f);
+        //shader.setUniform4f("u_color", red, 0.5f, 0.5f, 0.5f);
         
         renderer.draw(va, ib, shader);
 

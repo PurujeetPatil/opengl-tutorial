@@ -36,6 +36,11 @@ void Shader::setUniform4f(const std::string& location, float f1, float f2, float
 	GLCall(glUniform4f(getUniformLocation(location), f1, f2, f3, f4));
 }
 
+void Shader::setUniformMat4f(const std::string& location, const glm::mat4& matrix)
+{
+	GLCall(glUniformMatrix4fv(getUniformLocation(location), 1, GL_FALSE, &matrix[0][0]));
+}
+
 unsigned int Shader::getShaderProgram(const std::string& vertexShader, const std::string& fragmentShader)
 {
 	// Create a program to run on GPU
