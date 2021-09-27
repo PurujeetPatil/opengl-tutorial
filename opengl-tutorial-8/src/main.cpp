@@ -5,6 +5,9 @@
 #include <math.h>
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <imgui/imgui.h>
+#include <imgui/imgui_impl_glfw.h>
+#include <imgui/imgui_impl_opengl3.h>
 
 #include "fileutil.h"
 #include "errorHandler.h"
@@ -55,6 +58,8 @@ int main(void)
         -0.5f,  0.5f, 0.0f, 1.0f  // 3
     };
 
+
+
     unsigned int indices[] = {
         0, 1, 2,
         2, 3, 0
@@ -92,19 +97,28 @@ int main(void)
 	unsigned int uniform_location = glGetUniformLocation(shader, "u_color");*/
 
 
-    glm::mat4 projection = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+    glm::mat4 projection = glm::ortho(0.0f, 4.0f, 0.0f, 3.0f, -1.0f, 1.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+
 
     Shader shader("res/shader/basic.shader");
 
 	Texture texture("res\\textures\\meme.png");
 	texture.bind();
     shader.setUniform1i("u_texture", 0);
-    shader.setUniformMat4f("u_MVP", projection);
     
     Renderer renderer;
+    
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init((char*)glGetString(GL_NUM_SHADING_LANGUAGE_VERSIONS));
 
     // some fancy animated color shifts
-    float red = 0.0f, inc = 0.01f;
+    float red = 0.0f, inc = 0.01f, x_translate = 0.0f, x_inc = -0.1f;
+    glm::vec3 translation(0.0f, 0.0f, 0.0f);
 
     /* Unbinding everything */
     glBindVertexArray(0);
@@ -118,6 +132,10 @@ int main(void)
     {
         /* Render here */
         renderer.clear();
+
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();
+        ImGui::NewFrame();
 
         /*
             Instead of glDrawArrays we use glDrawELements
@@ -136,8 +154,20 @@ int main(void)
 		glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);*/
         shader.bind();
         //shader.setUniform4f("u_color", red, 0.5f, 0.5f, 0.5f);
+
+        
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
+        glm::mat4 mvp = projection * view * model;
+        shader.setUniformMat4f("u_MVP", mvp);
         
         renderer.draw(va, ib, shader);
+
+        /*if (x_translate > 0.5f)
+            x_inc = -0.1f;
+        else if (x_translate < -0.5f)
+            x_inc = 0.1f;
+
+        x_translate += x_inc;*/
 
         if (red > 1.0f)
             inc = -0.01f;
@@ -146,6 +176,21 @@ int main(void)
 
         red += inc;
 
+        {
+
+            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
+
+
+            ImGui::SliderFloat2("float", &translation.x, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+
+
+            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+            ImGui::End();
+        }
+
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
 
@@ -153,6 +198,11 @@ int main(void)
         glfwPollEvents();
     }
     /*glDeleteProgram(shader);*/
+
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
+
     glfwTerminate();
     return 0;
 }
