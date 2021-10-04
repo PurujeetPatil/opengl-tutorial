@@ -17,6 +17,7 @@
 #include "shader.h"
 #include "renderer.h"
 #include "textures.h"
+#include "test/TestClearColor.h"
 
 int main(void)
 {
@@ -32,7 +33,7 @@ int main(void)
 
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(1280, 720, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -52,10 +53,10 @@ int main(void)
     std::cout << glGetString(GL_VERSION) << std::endl;
 
     float positions[] = {
-        -0.5f, -0.5f, 0.0f, 0.0f, // 0
-         0.5f, -0.5f, 1.0f, 0.0f, // 1
-         0.5f,  0.5f, 1.0f, 1.0f, // 2
-        -0.5f,  0.5f, 0.0f, 1.0f  // 3
+         0.0f,  0.0f, 0.0f, 0.0f, // 0
+         200.0f,  0.0f, 1.0f, 0.0f, // 1
+         200.0f,  200.0f, 1.0f, 1.0f, // 2
+         0.0f,  200.0f, 0.0f, 1.0f  // 3
     };
 
 
@@ -97,8 +98,8 @@ int main(void)
 	unsigned int uniform_location = glGetUniformLocation(shader, "u_color");*/
 
 
-    glm::mat4 projection = glm::ortho(0.0f, 4.0f, 0.0f, 3.0f, -1.0f, 1.0f);
-    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.5f, 1.0f, 0.0f));
+    glm::mat4 projection = glm::ortho(0.0f, 1280.0f, 0.0f, 720.0f, -1.0f, 1.0f);
+    glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f));
 
 
     Shader shader("res/shader/basic.shader");
@@ -126,34 +127,41 @@ int main(void)
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+    test::Test* currentTest = nullptr;
+    test::TestMenu* menu = new test::TestMenu(currentTest);
+    currentTest = menu;
+
+    menu->RegisterTest<test::TestClearColor>("Test Color");
+    
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
+        GLCall(glClearColor(0.0f, 0.0f, 0.0f, 1.0f));
         renderer.clear();
+
 
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
 
-        /*
-            Instead of glDrawArrays we use glDrawELements
-            params:
-                mode: GL_TRIANGLES
-                count: number of indices
-                type: data type of indices, it has to be GL_UNSIGNED_INT
-                indexBuffer: nullptr as we have already binded the buffer to GL_ELEMENT_ARRAY_BUFFER target
-        */
+        if (currentTest)
+        {
+            currentTest->onUpdate(0.0f);
+            currentTest->onRender();
+            ImGui::Begin("Test");
+            if (currentTest != menu && ImGui::Button("<-"))
+            {
+                delete currentTest;
+                currentTest = menu;
+            }
+            currentTest->ImGuiRender();
+            ImGui::End();
+        }
 
-        // An openGL error that got handled
-        //GLCall(glDrawElements(GL_TRIANGLES, 6, GL_INT, nullptr));
-
-        /* Binding Shader program and just VAO as vao stores vb and ibo */
-	   /* glUseProgram(shader);
-		glUniform4f(uniform_location, red, 0.5f, 0.5f, 0.5f);*/
         shader.bind();
-        //shader.setUniform4f("u_color", red, 0.5f, 0.5f, 0.5f);
+
 
         
         glm::mat4 model = glm::translate(glm::mat4(1.0f), translation);
@@ -175,18 +183,6 @@ int main(void)
             inc = 0.01f;
 
         red += inc;
-
-        {
-
-            ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
-
-
-            ImGui::SliderFloat2("float", &translation.x, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-
-
-            ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-            ImGui::End();
-        }
 
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
