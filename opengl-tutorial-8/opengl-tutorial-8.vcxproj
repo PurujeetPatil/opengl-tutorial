@@ -27,6 +27,7 @@
     <ClCompile Include="src\shader.cpp" />
     <ClCompile Include="src\test\Test.cpp" />
     <ClCompile Include="src\test\TestClearColor.cpp" />
+    <ClCompile Include="src\test\TestTexture2D.cpp" />
     <ClCompile Include="src\textures.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
@@ -48,6 +49,7 @@
     <ClInclude Include="src\shader.h" />
     <ClInclude Include="src\test\Test.h" />
     <ClInclude Include="src\test\TestClearColor.h" />
+    <ClInclude Include="src\test\TestTexture2D.h" />
     <ClInclude Include="src\textures.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />
     <ClInclude Include="src\vendor\glm\detail\compute_common.hpp" />

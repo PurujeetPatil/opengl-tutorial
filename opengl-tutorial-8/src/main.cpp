@@ -18,6 +18,7 @@
 #include "renderer.h"
 #include "textures.h"
 #include "test/TestClearColor.h"
+#include "test/TestTexture2D.h"
 
 int main(void)
 {
@@ -122,16 +123,17 @@ int main(void)
     glm::vec3 translation(0.0f, 0.0f, 0.0f);
 
     /* Unbinding everything */
-    glBindVertexArray(0);
+    /*glBindVertexArray(0);
     glUseProgram(0);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);*/
 
     test::Test* currentTest = nullptr;
     test::TestMenu* menu = new test::TestMenu(currentTest);
     currentTest = menu;
 
     menu->RegisterTest<test::TestClearColor>("Test Color");
+    menu->RegisterTest<test::TestTexture2D>("Test Texture");
     
 
     /* Loop until the user closes the window */
@@ -168,7 +170,7 @@ int main(void)
         glm::mat4 mvp = projection * view * model;
         shader.setUniformMat4f("u_MVP", mvp);
         
-        renderer.draw(va, ib, shader);
+        //renderer.draw(va, ib, shader);
 
         /*if (x_translate > 0.5f)
             x_inc = -0.1f;
